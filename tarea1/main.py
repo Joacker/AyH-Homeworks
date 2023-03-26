@@ -14,6 +14,8 @@
             4           X  X  X  X
             2              X  X
 '''
+import sys
+from csp import CSP
 # Restrcciones de dimenciones de la matriz 10x10
 DIMENSION = 10
 
@@ -46,8 +48,15 @@ def constraints():
                 constraints.append(([(i, j), (i - k + j, k)], lambda x, y: x != y))
     return constraints
 
+def solve():
+    # Se crea un problema de CSP
+    problem = CSP(domains(), constraints())
+    # Se resuelve el problema
+    solution = problem.backtracking_search()
+    # Se imprime la solucion
+    print(solution)
+
 def main():
-     
     print("Hello World")
 
 if __name__ == '__main__':
