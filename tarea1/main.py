@@ -1,4 +1,4 @@
-# make a nonogram solver
+# Tarea 1
 
 '''
                         3  7  7  3
