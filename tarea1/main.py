@@ -14,7 +14,41 @@
             4           X  X  X  X
             2              X  X
 '''
+# Restrcciones de dimenciones de la matriz 10x10
+DIMENSION = 10
 
+def domains():
+    # Se crea un diccionario con las variables y sus dominios
+    domains = {}
+    for i in range(DIMENSION):
+        for j in range(DIMENSION):
+            domains[(i, j)] = [1, 2, 3, 4, 6, 7, 8, 10]
+    return domains
+
+def constraints():
+    # Se crea una lista de restricciones
+    constraints = []
+    # Se agregan las restricciones de las filas
+    for i in range(DIMENSION):
+        for j in range(DIMENSION):
+            for k in range(j + 1, DIMENSION):
+                constraints.append(([(i, j), (i, k)], lambda x, y: x != y))
+    # Se agregan las restricciones de las columnas
+    for i in range(DIMENSION):
+        for j in range(DIMENSION):
+            for k in range(j + 1, DIMENSION):
+                constraints.append(([(j, i), (k, i)], lambda x, y: x != y))
+    # Se agregan las restricciones de las diagonales
+    for i in range(DIMENSION):
+        for j in range(DIMENSION):
+            for k in range(j + 1, DIMENSION):
+                constraints.append(([(i, j), (i + k - j, k)], lambda x, y: x != y))
+                constraints.append(([(i, j), (i - k + j, k)], lambda x, y: x != y))
+    return constraints
+
+def main():
+     
+    print("Hello World")
 
 if __name__ == '__main__':
-    print("Hello World")
+    main()
