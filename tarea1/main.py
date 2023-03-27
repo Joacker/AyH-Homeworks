@@ -20,8 +20,8 @@ VARIABLES = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10']
 # Restrcciones de dimenciones de la matriz 10x10
 DIMENSION = 10
 # Restricciones de los valores de la matriz
-FILAS = [4, 2, 7, [3, 4], [7, 2], [7, 2], [3, 4], 7, 2, 4]
-COLUMNAS = [4, 8, 10, [1, 1, 2, 1, 1], [1, 1, 2, 1, 1], [1, 6, 1], 6, [2, 2], 4, 2]
+FILAS = [4, 2, 7, {3, 4}, {7, 2}, {7, 2}, {3, 4}, 7, 2, 4]
+COLUMNAS = [4, 8, 10, {1, 1, 2, 1, 1}, {1, 1, 2, 1, 1}, {1, 6, 1}, 6, {2, 2}, 4, 2]
 '''
 COORDEANDAS = [ (0, 0), (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6), (0, 7), (0, 8), (0, 9),
                 (1, 0), (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8), (1, 9),
@@ -56,8 +56,19 @@ for i in range(DIMENSION):
         print(MATRIZ[i][j], end=' ')
     print()
 
+def forward_checking():
+    #Aplicando forward checking sobre la matriz dado las columnas y filas
+    for i in range(DIMENSION):
+        for j in range(DIMENSION):
+            print(MATRIZ[i][j], end=' ')
+        print()
+       
+
 def main():
-    print("Tarea 1")
+    #Aplicando forward checking sobre la matriz dado las columnas y filas
+    forward_checking()
+    
+    
     
 if __name__ == '__main__':
     main()
