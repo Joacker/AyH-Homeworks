@@ -30,7 +30,11 @@ def row_constraint(*variables, block):
     for i in filled_cells:
         if i != "":
             consecutive_filled.append(len(i))
-    return consecutive_filled == block
+    
+    if consecutive_filled == block:
+        return True
+    
+    return False
 
 def column_constraint(*variables, block):
     return row_constraint(*variables, block=block)
