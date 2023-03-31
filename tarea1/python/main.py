@@ -18,39 +18,61 @@
 import constraint
 from functools import partial
 
-
 def row_constraint(*variables, block):
-    # Separamos las variables pintadas y contamos los bloques separados por '0's
-    consecutive_filled = [len(group) for group in "".join(str(v) for v in variables).split("0") if group]
-    if consecutive_filled == block:
-        return True
-    return False
+    # Separamos las variables pintadas y conmtamos los bloques separados por '0's
+    filled_cells = ""
+    for v in variables:
+        filled_cells += str(v)
+    filled_cells = filled_cells.split("0")
+    print(filled_cells)
+    
+    consecutive_filled = []
+    for i in filled_cells:
+        if i != "":
+            consecutive_filled.append(len(i))
+    return consecutive_filled == block
 
 def column_constraint(*variables, block):
     return row_constraint(*variables, block=block)
 
-def create_function(rows, columns, row_constraints, column_constraints):
+def create_problem(row_c, column_c):
+    # Entregamos las dimensiones de la matriz
+    rows, columns = len(row_c), len(column_c)
     problem = constraint.Problem()
-    variables = [f"X_{row}_{col}" for row in range(rows) for col in range(columns)]
+    print(problem)
+
+    # Variables
+    variables = []
+    for row in range(rows): 
+        for col in range(columns):
+            variables.append(f"({row},{col})")
+            
+    #print(variables)
+
+    # Se definen los dominios para las variables
     domain = [0, 1]
+
     problem.addVariables(variables, domain)
-    for i, row_blocks in enumerate(row_constraints):
-        problem.addConstraint(partial(row_constraint, block=row_blocks), [f"X_{i}_{j}" for j in range(columns)])
-    for j, col_blocks in enumerate(column_constraints):
-        problem.addConstraint(partial(row_constraint, block=col_blocks), [f"X_{i}_{j}" for i in range(rows)])
+
+    # Restricciones
+    for i, row_blocks in enumerate(row_c):
+        problem.addConstraint(partial(row_constraint, block=row_blocks), [f"({i},{j})" for j in range(columns)])
+
+    for j, col_blocks in enumerate(column_c):
+        problem.addConstraint(partial(row_constraint, block=col_blocks), [f"({i},{j})" for i in range(rows)])
+
     return problem.getSolution()
-     
 
 def display_solution(solution, size):
-    if solution != None:
+    if solution is None:
+        print("No solution found.")
+    else:
         print ("###########")
         rows, columns = size
         for i in range(rows):
             for j in range(columns):
-                print(solution[f"X_{i}_{j}"], end=" ")
+                print(solution[f"({i},{j})"], end=" ")
             print()
-    else:
-        print("Cannot found a solution for the problem.")
 
 def main():
     row_constraints = [
@@ -78,8 +100,10 @@ def main():
         [2],
         [4]
     ]
-    sol = create_function(len(row_constraints), len(column_constraints), row_constraints, column_constraints)
+
+
+
+    sol = create_problem(row_constraints, column_constraints)
     display_solution(sol, (len(row_constraints), len(column_constraints)))
 
-if __name__ == "__main__":
-    main()
+main()
