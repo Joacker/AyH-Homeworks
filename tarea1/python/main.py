@@ -68,15 +68,15 @@ def create_problem(row_c, column_c):
     return problem.getSolution()
 
 def display_solution(solution, size):
-    if solution is None:
-        print("No solution found.")
-    else:
+    if solution != None:
         print ("###########")
         rows, columns = size
         for i in range(rows):
             for j in range(columns):
                 print(solution[f"({i},{j})"], end=" ")
             print()
+    else:
+        print("No solution found.")
 
 def main():
     row_constraints = [
