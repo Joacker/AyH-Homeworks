@@ -103,7 +103,7 @@ def main():
 
 
 
-    sol = create_problem(row_constraints, column_constraints)
-    display_solution(sol, (len(row_constraints), len(column_constraints)))
+    solution = create_problem(row_constraints, column_constraints)
+    display_solution(solution, (len(row_constraints), len(column_constraints)))
 
 main()
