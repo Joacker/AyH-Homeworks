@@ -15,68 +15,36 @@
             2              X  X
 '''
 
-import constraint
-from functools import partial
 
-def row_constraint(*variables, block):
-    # Separamos las variables pintadas y conmtamos los bloques separados por '0's
-    filled_cells = ""
-    for v in variables:
-        filled_cells += str(v)
-    filled_cells = filled_cells.split("0")
-    print(filled_cells)
+
+def Constraint_rows(row_constraints, Generate_board, Domain):
+    print(row_constraints)
+    # Acceder a cada arreglo dentro del arreglo
+    for i in range(len(row_constraints)):
+        # Acceder a cada elemento dentro del arreglo
+        for j in range(len(row_constraints[i])):
+            if (row_constraints[i][j] == len(row_constraints)):
+                # imprime la posicion de la fila
+                for x in range(len(Generate_board[i])):
+                    Generate_board[i][x] = Domain[1]      
     
-    consecutive_filled = []
-    for i in filled_cells:
-        if i != "":
-            consecutive_filled.append(len(i))
-    
-    if consecutive_filled == block:
-        return True
-    
-    return False
-
-def column_constraint(*variables, block):
-    return row_constraint(*variables, block=block)
-
-def create_problem(row_c, column_c):
-    # Entregamos las dimensiones de la matriz
-    rows, columns = len(row_c), len(column_c)
-    problem = constraint.Problem()
-    print(problem)
-
-    # Variables
-    variables = []
-    for row in range(rows): 
-        for col in range(columns):
-            variables.append(f"({row},{col})")
+    print(Generate_board)
             
-    #print(variables)
+    
 
-    # Se definen los dominios para las variables
-    domain = [0, 1]
+# Generate a code to solve a nonogram
 
-    problem.addVariables(variables, domain)
-
-    # Restricciones
-    for i, row_blocks in enumerate(row_c):
-        problem.addConstraint(partial(row_constraint, block=row_blocks), [f"({i},{j})" for j in range(columns)])
-
-    for j, col_blocks in enumerate(column_c):
-        problem.addConstraint(partial(row_constraint, block=col_blocks), [f"({i},{j})" for i in range(rows)])
-
-    return problem.getSolution()
-
-def display_solution(solution, size):
-    if solution != None:
-        print ("###########")
-        rows, columns = size
-        for i in range(rows):
-            for j in range(columns):
-                print(solution[f"({i},{j})"], end=" ")
-            print()
-    else:
-        print("No solution found.")
+def create_problem(row_constraints, column_constraints):
+    dimension_rows = len(row_constraints) ; dimension_columns = len(column_constraints)
+    
+    # Genera la matriz de 0's
+    Generate_board = [[0 for i in range(dimension_columns)] for j in range(dimension_rows)]
+    Domain = [0, 1]
+    
+    Constraint_rows(row_constraints, Generate_board, Domain)
+    
+    
+    
 
 def main():
     row_constraints = [
@@ -105,9 +73,6 @@ def main():
         [4]
     ]
 
-
-
-    solution = create_problem(row_constraints, column_constraints)
-    display_solution(solution, (len(row_constraints), len(column_constraints)))
+    create_problem(row_constraints, column_constraints)
 
 main()
