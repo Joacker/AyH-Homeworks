@@ -17,20 +17,32 @@
 
 
 
+def validator(constraints,row_constraints):
+    suma = 0
+    for i in constraints:
+        suma += i
+    print(suma)
+    expression = suma + len(constraints) - 1
+    if suma == len(row_constraints):
+        return [suma]
+    if (expression == len(row_constraints)):
+        return [expression, row_constraints]
+    
+    
 def Constraint_rows(row_constraints, Generate_board, Domain):
     print(row_constraints)
+    sumas = []
+    for i in row_constraints:
+        sumas.append(validator(i))
     # Acceder a cada arreglo dentro del arreglo
     for i in range(len(row_constraints)):
+        print(i)
         # Acceder a cada elemento dentro del arreglo
         for j in range(len(row_constraints[i])):
             if (row_constraints[i][j] == len(row_constraints)):
                 # imprime la posicion de la fila
                 for x in range(len(Generate_board[i])):
-                    Generate_board[i][x] = Domain[1]      
-    
-    print(Generate_board)
-            
-    
+                    Generate_board[i][x] = Domain[1]  
 
 # Generate a code to solve a nonogram
 
@@ -41,10 +53,7 @@ def create_problem(row_constraints, column_constraints):
     Generate_board = [[0 for i in range(dimension_columns)] for j in range(dimension_rows)]
     Domain = [0, 1]
     
-    Constraint_rows(row_constraints, Generate_board, Domain)
-    
-    
-    
+    Constraint_rows(row_constraints, Generate_board, Domain)   
 
 def main():
     row_constraints = [

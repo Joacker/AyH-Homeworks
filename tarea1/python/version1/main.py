@@ -105,8 +105,6 @@ def main():
         [4]
     ]
 
-
-
     solution = create_problem(row_constraints, column_constraints)
     display_solution(solution, (len(row_constraints), len(column_constraints)))
 
