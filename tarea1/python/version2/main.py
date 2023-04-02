@@ -159,6 +159,35 @@ def preprocess(row_clues, col_clues, width, height):
                 for row in range(height - clue + 1, clue):
                     index = row * width + col
                     domains[index] = [1]
+        else:
+            if validate(clues):
+                if len(clues) == 1:
+                    for col in range(width):
+                        index = row * width + col
+                        domains[index] = [1]
+                else:
+                    cont = 0
+                    nrestriccion = 0
+                    aux = 0
+                    for c in clues:
+                        print("rango de cc", c)
+                        i = 0
+                        nrestriccion += 1
+                        for i in range(c):
+                            index = col  + cont
+                            print("indexc",index)
+                            domains[index] = [1]
+                            cont += 10
+                            i += 1
+                        if cont < 100:
+                            print("Entra a 0c")
+                            print(cont)
+                            index = col  + cont
+                            
+                            print("indexc",index)
+                            domains[index] = [0]
+                            cont += 10
+                            aux += 1
     return domains
 
 def solve_nonogram(row_clues, col_clues):
@@ -168,7 +197,7 @@ def solve_nonogram(row_clues, col_clues):
     print(domains)
 
     new_domains, node_count, backtrack_count = forward_checking(domains, width, height, row_clues, col_clues, 0, 0)
-    print( new_domains, node_count, backtrack_count)
+    #print( new_domains, node_count, backtrack_count)
 
     if new_domains:
         assignment = {i: new_domains[i][0] for i in range(len(new_domains))}
