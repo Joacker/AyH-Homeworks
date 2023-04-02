@@ -99,7 +99,7 @@ def validate(constrains):
     return False
 
 def preprocess(row_clues, col_clues, width, height):
-    print(row_clues, col_clues, width, height)
+    #print(row_clues, col_clues, width, height)
     domains = [[0, 1] for _ in range(width * height)]
     # Procesar filas
     for row, clues in enumerate(row_clues):
@@ -125,21 +125,21 @@ def preprocess(row_clues, col_clues, width, height):
                     nrestriccion = 0
                     aux = 0
                     for c in clues:
-                        print("rango de c", c)
+                        #print("rango de c", c)
                         i = 0
                         nrestriccion += 1
                         for i in range(c):
                             index = row * width + cont
-                            print("index",index)
+                            #print("index",index)
                             domains[index] = [1]
                             cont += 1
                             i += 1
                         if cont < 10:
-                            print("Entra a 0")
-                            print(cont)
+                            #print("Entra a 0")
+                            #print(cont)
                             index = row * width + cont
                             
-                            print("index",index)
+                            #print("index",index)
                             domains[index] = [0]
                             cont += 1
                             aux += 1
@@ -170,21 +170,21 @@ def preprocess(row_clues, col_clues, width, height):
                     nrestriccion = 0
                     aux = 0
                     for c in clues:
-                        print("rango de cc", c)
+                        #print("rango de cc", c)
                         i = 0
                         nrestriccion += 1
                         for i in range(c):
                             index = col  + cont
-                            print("indexc",index)
+                            #print("indexc",index)
                             domains[index] = [1]
                             cont += 10
                             i += 1
                         if cont < 100:
-                            print("Entra a 0c")
-                            print(cont)
+                            #print("Entra a 0c")
+                            #print(cont)
                             index = col  + cont
                             
-                            print("indexc",index)
+                            #print("indexc",index)
                             domains[index] = [0]
                             cont += 10
                             aux += 1
@@ -194,7 +194,7 @@ def solve_nonogram(row_clues, col_clues):
     height = len(row_clues)
     width = len(col_clues)
     domains = preprocess(row_clues, col_clues, width, height)
-    print(domains)
+    #print(domains)
 
     new_domains, node_count, backtrack_count = forward_checking(domains, width, height, row_clues, col_clues, 0, 0)
     #print( new_domains, node_count, backtrack_count)
