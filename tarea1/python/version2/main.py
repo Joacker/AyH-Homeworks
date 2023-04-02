@@ -178,41 +178,45 @@ def solve_nonogram(row_clues, col_clues):
         print("No solution found")
         return None, node_count, backtrack_count
 
-row_clues = [
-    [4],
-    [8],
-    [10],
-    [1, 1, 2, 1, 1],
-    [1, 1, 2, 1, 1],
-    [1, 6, 1],
-    [6],
-    [2, 2],
-    [4],
-    [2]
-]
+def main():
 
-col_clues = [
-    [4],
-    [2],
-    [7],
-    [3, 4],
-    [7, 2],
-    [7, 2],
-    [3, 4],
-    [7],
-    [2],
-    [4]
-]
+    row_clues = [
+        [4],
+        [8],
+        [10],
+        [1, 1, 2, 1, 1],
+        [1, 1, 2, 1, 1],
+        [1, 6, 1],
+        [6],
+        [2, 2],
+        [4],
+        [2]
+    ]
 
-start_time = time.perf_counter()
-solution, node_count, backtrack_count = solve_nonogram(row_clues, col_clues)
-end_time = time.perf_counter()
+    col_clues = [
+        [4],
+        [2],
+        [7],
+        [3, 4],
+        [7, 2],
+        [7, 2],
+        [3, 4],
+        [7],
+        [2],
+        [4]
+    ]
 
-if solution:
-    for row in solution:
-        print("".join("1 " if cell == 1 else "0 " for cell in row))
+    start_time = time.perf_counter()
+    solution, node_count, backtrack_count = solve_nonogram(row_clues, col_clues)
+    end_time = time.perf_counter()
 
-elapsed_time = end_time - start_time
-print(f"Tiempo de ejecución: {elapsed_time:.4f} segundos")
-print(f"Nodos generados: {node_count}")
-print(f"Nodos con backtracking: {backtrack_count}")
+    if solution:
+        for row in solution:
+            print("".join("1 " if cell == 1 else "0 " for cell in row))
+
+    elapsed_time = end_time - start_time
+    print(f"Tiempo de ejecución: {elapsed_time:.4f} segundos")
+    print(f"Nodos generados: {node_count}")
+    print(f"Nodos con backtracking: {backtrack_count}")
+
+main()
