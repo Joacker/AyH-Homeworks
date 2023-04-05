@@ -143,10 +143,6 @@ def preprocess(row_clues, col_clues, width, height):
                             domains[index] = [0]
                             cont += 1
                             aux += 1
-
-
-
-    
     # Procesar columnas
     for col, clues in enumerate(col_clues):
         if len(clues) == 1:

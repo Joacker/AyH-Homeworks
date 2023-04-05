@@ -14,9 +14,10 @@
             4           X  X  X  X
             2              X  X
 '''
-
+import time
 import constraint
 from functools import partial
+
 
 def row_constraint(*variables, block):
     # Separamos las variables pintadas y conmtamos los bloques separados por '0's
@@ -24,7 +25,7 @@ def row_constraint(*variables, block):
     for v in variables:
         filled_cells += str(v)
     filled_cells = filled_cells.split("0")
-    print(filled_cells)
+    #print(filled_cells)
     
     consecutive_filled = []
     for i in filled_cells:
@@ -104,8 +105,11 @@ def main():
         [2],
         [4]
     ]
+    start_time = time.perf_counter()
 
     solution = create_problem(row_constraints, column_constraints)
     display_solution(solution, (len(row_constraints), len(column_constraints)))
-
+    end_time = time.perf_counter()
+    elapsed_time = end_time - start_time
+    print(f"Tiempo de ejecución: {elapsed_time:.4f} segundos")
 main()
