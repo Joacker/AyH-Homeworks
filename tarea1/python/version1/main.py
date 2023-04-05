@@ -19,8 +19,13 @@ import constraint
 from functools import partial
 
 
+
+CONSTRAINTS_CONT = 0
+
 def row_constraint(*variables, block):
     # Separamos las variables pintadas y conmtamos los bloques separados por '0's
+    global CONSTRAINTS_CONT
+    CONSTRAINTS_CONT += 1
     filled_cells = ""
     for v in variables:
         filled_cells += str(v)
@@ -44,7 +49,7 @@ def create_problem(row_c, column_c):
     # Entregamos las dimensiones de la matriz
     rows, columns = len(row_c), len(column_c)
     problem = constraint.Problem()
-    print(problem)
+    #print(problem)
 
     # Variables
     variables = []
@@ -112,4 +117,5 @@ def main():
     end_time = time.perf_counter()
     elapsed_time = end_time - start_time
     print(f"Tiempo de ejecución: {elapsed_time:.4f} segundos")
+    print(f"La cantidad de restricciones es de: {CONSTRAINTS_CONT} veces")
 main()

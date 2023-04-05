@@ -59,11 +59,11 @@ def select_variable(domains):
             selected_index = i
     return selected_index if selected_index != -1 else len(domains)
 
-def forward_checking(domains, width, height, row_clues, col_clues, node_count, backtrack_count):
+def forward_checking(domains, width, height, row_clues, col_clues, node_count):
     selected_index = select_variable(domains)
 
     if selected_index == len(domains):
-        return domains, node_count, backtrack_count
+        return domains, node_count
 
     node_count += 1
 
@@ -78,13 +78,11 @@ def forward_checking(domains, width, height, row_clues, col_clues, node_count, b
                 new_domains[i] = [v for v in domains[i] if is_consistent(assignment, i, v, row_clues, col_clues, width, height)]
 
             if all(new_domains[i] for i in range(selected_index + 1, len(domains))):
-                result, new_node_count, new_backtrack_count = forward_checking(new_domains, width, height, row_clues, col_clues, node_count, backtrack_count)
+                result, new_node_count = forward_checking(new_domains, width, height, row_clues, col_clues, node_count)
                 if result:
-                    return result, new_node_count, new_backtrack_count
-        else:
-            backtrack_count += 1
+                    return result, new_node_count
 
-    return None, node_count, backtrack_count
+    return None, node_count
 
 def validate(constrains):
     suma = 0
@@ -192,16 +190,16 @@ def solve_nonogram(row_clues, col_clues):
     domains = preprocess(row_clues, col_clues, width, height)
     #print(domains)
 
-    new_domains, node_count, backtrack_count = forward_checking(domains, width, height, row_clues, col_clues, 0, 0)
+    new_domains, node_count = forward_checking(domains, width, height, row_clues, col_clues, 0)
     #print( new_domains, node_count, backtrack_count)
 
     if new_domains:
         assignment = {i: new_domains[i][0] for i in range(len(new_domains))}
         grid = [[assignment[row * width + col] for col in range(width)] for row in range(height)]
-        return grid, node_count, backtrack_count
+        return grid, node_count
     else:
         print("No solution found")
-        return None, node_count, backtrack_count
+        return None, node_count
 
 def main():
 
@@ -232,7 +230,7 @@ def main():
     ]
 
     start_time = time.perf_counter()
-    solution, node_count, backtrack_count = solve_nonogram(row_clues, col_clues)
+    solution, node_count= solve_nonogram(row_clues, col_clues)
     end_time = time.perf_counter()
 
     if solution:
@@ -242,6 +240,5 @@ def main():
     elapsed_time = end_time - start_time
     print(f"Tiempo de ejecución: {elapsed_time:.4f} segundos")
     print(f"Nodos generados: {node_count}")
-    print(f"Nodos con backtracking: {backtrack_count}")
 
 main()
