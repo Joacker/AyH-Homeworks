@@ -48,7 +48,7 @@ def column_constraint(*variables, block):
 def create_problem(row_c, column_c):
     # Entregamos las dimensiones de la matriz
     rows, columns = len(row_c), len(column_c)
-    problem = constraint.Problem()
+    problem = constraint.Problem(constraint.BacktrackingSolver(forwardcheck = True))
     #print(problem)
 
     # Variables
