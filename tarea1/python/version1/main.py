@@ -79,7 +79,11 @@ def display_solution(solution, size):
         rows, columns = size
         for i in range(rows):
             for j in range(columns):
-                print(solution[f"({i},{j})"], end=" ")
+                if (solution["("+str(i)+","+str(j)+")"] == 0):
+                    print(". ", end="")
+                elif (solution["("+str(i)+","+str(j)+")"] == 1):
+                    print("X ", end="")
+                
             print()
     else:
         print("No solution found.")
@@ -87,27 +91,21 @@ def display_solution(solution, size):
 def main():
     row_constraints = [
         [4],
-        [8],
-        [10],
-        [1, 1, 2, 1, 1],
-        [1, 1, 2, 1, 1],
-        [1, 6, 1],
-        [6],
-        [2, 2],
-        [4],
-        [2]
+        [5],
+        [1, 2],
+        [1, 2],
+        [1, 2],
+        [1, 2],
+        [5],
+        [4]
     ]
 
     column_constraints = [
-        [4],
-        [2],
-        [7],
-        [3, 4],
-        [7, 2],
-        [7, 2],
-        [3, 4],
-        [7],
-        [2],
+        [2, 2],
+        [8],
+        [2, 2],
+        [2, 2],
+        [6],
         [4]
     ]
     start_time = time.perf_counter()
