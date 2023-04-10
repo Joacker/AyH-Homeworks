@@ -41,7 +41,7 @@ def verify(sequence, constraint):
             count.append(len(list(g)))
     return count == constraint
 
-def is_consistent(asignados, index, value, row_constraints, column_constraints, ancho, largo):
+def consistent(asignados, index, value, row_constraints, column_constraints, ancho, largo):
     row_indices = index_fila(index, ancho)
     col_indices = index_columna(index, largo)
 
@@ -54,14 +54,12 @@ def is_consistent(asignados, index, value, row_constraints, column_constraints, 
         else:
             row.append(asignados[i])
     
-    
     for i in col_indices:
         if i not in asignados:
             col.append(None)
         else:
             col.append(asignados[i])
-    
-    
+
     row[index % ancho] = value
     col[index // ancho] = value
     
@@ -87,7 +85,7 @@ def forward_checking(domains, ancho, largo, row_constraints, column_constraints,
         for i in range(index):
             asignados[i] = domains[i][0]
 
-        if is_consistent(asignados, index, value, row_constraints, column_constraints, ancho, largo):
+        if consistent(asignados, index, value, row_constraints, column_constraints, ancho, largo):
             #new_domains = [domain.copy() for domain in domains]
             new_domains = []
             for domain in domains:
@@ -97,7 +95,7 @@ def forward_checking(domains, ancho, largo, row_constraints, column_constraints,
             for i in range(index + 1, len(domains)):
                 new_domains[i] = []
                 for v in domains[i]:
-                    if is_consistent(asignados, i, v, row_constraints, column_constraints, ancho, largo):
+                    if consistent(asignados, i, v, row_constraints, column_constraints, ancho, largo):
                         new_domains[i].append(v)
                 
             if all(new_domains[i] for i in range(index + 1, len(domains))):
@@ -219,7 +217,7 @@ def preprocess(row_constraints, column_constraints, ancho, largo):
                             aux += 1
     return domains
 
-def solve_nonogram(row_constraints, column_constraints):
+def solver(row_constraints, column_constraints):
     largo = len(row_constraints)
     ancho = len(column_constraints)
     domains = preprocess(row_constraints, column_constraints, ancho, largo)
@@ -273,7 +271,7 @@ def main():
     ]
 
     start_time = time.perf_counter()
-    solution, node_count= solve_nonogram(row_constraints, column_constraints)
+    solution, node_count= solver(row_constraints, column_constraints)
     end_time = time.perf_counter()
 
     if solution:
