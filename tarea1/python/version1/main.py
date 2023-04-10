@@ -82,7 +82,7 @@ def display_solution(solution, size):
                 if (solution["("+str(i)+","+str(j)+")"] == 0):
                     print(". ", end="")
                 elif (solution["("+str(i)+","+str(j)+")"] == 1):
-                    print("X ", end="")
+                    print("# ", end="")
                 
             print()
     else:
@@ -91,21 +91,27 @@ def display_solution(solution, size):
 def main():
     row_constraints = [
         [4],
-        [5],
-        [1, 2],
-        [1, 2],
-        [1, 2],
-        [1, 2],
-        [5],
-        [4]
-    ]
-
-    column_constraints = [
-        [2, 2],
         [8],
-        [2, 2],
-        [2, 2],
+        [10],
+        [1, 1, 2, 1, 1],
+        [1, 1, 2, 1, 1],
+        [1, 6, 1],
         [6],
+        [2, 2],
+        [4],
+        [2]
+    ]
+    
+    column_constraints = [
+        [4],
+        [2],
+        [7],
+        [3, 4],
+        [7, 2],
+        [7, 2],
+        [3, 4],
+        [7],
+        [2],
         [4]
     ]
     start_time = time.perf_counter()

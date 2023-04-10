@@ -17,72 +17,109 @@
 
 import itertools
 import time
+import sys
 
 
-def get_row_indices(index, width):
-    row = index // width
-    return [row * width + i for i in range(width)]
+def index_columna(index, largo):
+    col = index % largo
+    column_indices = []
+    for i in range(largo):
+        column_indices.append(col + i * largo)
+    return column_indices
 
-def get_col_indices(index, height):
-    col = index % height
-    return [col + i * height for i in range(height)]
+def index_fila(index, ancho):
+    row = index // ancho
+    crow_indices = []
+    for i in range(ancho):
+        crow_indices.append(row * ancho + i)
+    return crow_indices
 
-def check_constraint(sequence, clues):
-    count = [len(list(g)) for k, g in itertools.groupby(sequence) if k == 1]
-    return count == clues
+def verify(sequence, constraint):
+    count = []
+    for k, g in itertools.groupby(sequence):
+        if k == 1:
+            count.append(len(list(g)))
+    return count == constraint
 
-def is_consistent(assignment, index, value, row_clues, col_clues, width, height):
-    row_indices = get_row_indices(index, width)
-    col_indices = get_col_indices(index, height)
+def is_consistent(asignados, index, value, row_constraints, column_constraints, ancho, largo):
+    row_indices = index_fila(index, ancho)
+    col_indices = index_columna(index, largo)
+
+    row = []
+    col = []
+
+    for i in row_indices:
+        if i not in asignados:
+            row.append(None)
+        else:
+            row.append(asignados[i])
     
-    row = [assignment.get(i, None) for i in row_indices]
-    col = [assignment.get(i, None) for i in col_indices]
     
-    row[index % width] = value
-    col[index // width] = value
+    for i in col_indices:
+        if i not in asignados:
+            col.append(None)
+        else:
+            col.append(asignados[i])
     
-    if None not in row and not check_constraint(row, row_clues[index // width]):
+    
+    row[index % ancho] = value
+    col[index // ancho] = value
+    
+    if None not in row and not verify(row, row_constraints[index // ancho]):
         return False
 
-    if None not in col and not check_constraint(col, col_clues[index % height]):
+    if None not in col and not verify(col, column_constraints[index % largo]):
         return False
 
     return True
 
-def select_variable(domains):
-    min_remaining_values = float('inf')
-    selected_index = -1
+def forward_checking(domains, ancho, largo, row_constraints, column_constraints, node_count):
+    
+    index = get_variable(domains)
 
-    for i, domain in enumerate(domains):
-        if 1 < len(domain) < min_remaining_values:
-            min_remaining_values = len(domain)
-            selected_index = i
-    return selected_index if selected_index != -1 else len(domains)
-
-def forward_checking(domains, width, height, row_clues, col_clues, node_count):
-    selected_index = select_variable(domains)
-
-    if selected_index == len(domains):
+    if index == len(domains):
         return domains, node_count
 
     node_count += 1
 
-    for value in domains[selected_index]:
-        assignment = {i: domains[i][0] for i in range(selected_index)}
+    for value in domains[index]:
+        asignados = {}
+        for i in range(index):
+            asignados[i] = domains[i][0]
 
-        if is_consistent(assignment, selected_index, value, row_clues, col_clues, width, height):
-            new_domains = [domain.copy() for domain in domains]
-            new_domains[selected_index] = [value]
+        if is_consistent(asignados, index, value, row_constraints, column_constraints, ancho, largo):
+            #new_domains = [domain.copy() for domain in domains]
+            new_domains = []
+            for domain in domains:
+                new_domains.append(domain.copy())
+            new_domains[index] = [value]
 
-            for i in range(selected_index + 1, len(domains)):
-                new_domains[i] = [v for v in domains[i] if is_consistent(assignment, i, v, row_clues, col_clues, width, height)]
-
-            if all(new_domains[i] for i in range(selected_index + 1, len(domains))):
-                result, new_node_count = forward_checking(new_domains, width, height, row_clues, col_clues, node_count)
+            for i in range(index + 1, len(domains)):
+                new_domains[i] = []
+                for v in domains[i]:
+                    if is_consistent(asignados, i, v, row_constraints, column_constraints, ancho, largo):
+                        new_domains[i].append(v)
+                
+            if all(new_domains[i] for i in range(index + 1, len(domains))):
+                result, new_node_count = forward_checking(new_domains, ancho, largo, row_constraints, column_constraints, node_count)
                 if result:
                     return result, new_node_count
 
     return None, node_count
+
+def get_variable(domains):
+    
+    minimo_local = float(sys.maxsize)
+    index = -1
+
+    for i, domain in enumerate(domains):
+        if 1 < len(domain) < minimo_local:
+            minimo_local = len(domain)
+            index = i
+    if index != -1:
+        return index
+    else:
+        return len(domains)
 
 def validate(constrains):
     suma = 0
@@ -96,38 +133,37 @@ def validate(constrains):
         return True
     return False
 
-def preprocess(row_clues, col_clues, width, height):
-    #print(row_clues, col_clues, width, height)
-    domains = [[0, 1] for _ in range(width * height)]
+def preprocess(row_constraints, column_constraints, ancho, largo):
+    #print(row_constraints, column_constraints, ancho, largo)
+    domains = []
+    for _ in range(ancho * largo):
+        domains.append([0, 1])
     # Procesar filas
-    for row, clues in enumerate(row_clues):
-        if len(clues) == 1:
-            clue = clues[0]
+    for row, constraint in enumerate(row_constraints):
+        if len(constraint) == 1:
+            constraint = constraint[0]
             #solo para 10
-            if clue == width:
-                for col in range(width):
-                    index = row * width + col
+            if constraint == ancho:
+                for col in range(ancho):
+                    index = row * ancho + col
                     domains[index] = [1]
-            elif clue * 2 > width:
-                for col in range(width - clue + 1, clue):
-                    index = row * width + col
+            elif constraint * 2 > ancho:
+                for col in range(ancho - constraint + 1, constraint):
+                    index = row * ancho + col
                     domains[index] = [1]
         else:
-            if validate(clues):
-                if len(clues) == 1:
-                    for col in range(width):
-                        index = row * width + col
+            if validate(constraint):
+                if len(constraint) == 1:
+                    for col in range(ancho):
+                        index = row * ancho + col
                         domains[index] = [1]
                 else:
                     cont = 0
-                    nrestriccion = 0
-                    aux = 0
-                    for c in clues:
+                    for c in constraint:
                         #print("rango de c", c)
                         i = 0
-                        nrestriccion += 1
                         for i in range(c):
-                            index = row * width + cont
+                            index = row * ancho + cont
                             #print("index",index)
                             domains[index] = [1]
                             cont += 1
@@ -135,35 +171,34 @@ def preprocess(row_clues, col_clues, width, height):
                         if cont < 10:
                             #print("Entra a 0")
                             #print(cont)
-                            index = row * width + cont
+                            index = row * ancho + cont
                             
                             #print("index",index)
                             domains[index] = [0]
                             cont += 1
-                            aux += 1
     # Procesar columnas
-    for col, clues in enumerate(col_clues):
-        if len(clues) == 1:
-            clue = clues[0]
-            if clue == height:
-                for row in range(height):
-                    index = row * width + col
+    for col, constraint in enumerate(column_constraints):
+        if len(constraint) == 1:
+            constraint = constraint[0]
+            if constraint == largo:
+                for row in range(largo):
+                    index = row * ancho + col
                     domains[index] = [1]
-            elif clue * 2 > height:
-                for row in range(height - clue + 1, clue):
-                    index = row * width + col
+            elif constraint * 2 > largo:
+                for row in range(largo - constraint + 1, constraint):
+                    index = row * ancho + col
                     domains[index] = [1]
         else:
-            if validate(clues):
-                if len(clues) == 1:
-                    for col in range(width):
-                        index = row * width + col
+            if validate(constraint):
+                if len(constraint) == 1:
+                    for col in range(ancho):
+                        index = row * ancho + col
                         domains[index] = [1]
                 else:
                     cont = 0
                     nrestriccion = 0
                     aux = 0
-                    for c in clues:
+                    for c in constraint:
                         #print("rango de cc", c)
                         i = 0
                         nrestriccion += 1
@@ -184,54 +219,75 @@ def preprocess(row_clues, col_clues, width, height):
                             aux += 1
     return domains
 
-def solve_nonogram(row_clues, col_clues):
-    height = len(row_clues)
-    width = len(col_clues)
-    domains = preprocess(row_clues, col_clues, width, height)
+def solve_nonogram(row_constraints, column_constraints):
+    largo = len(row_constraints)
+    ancho = len(column_constraints)
+    domains = preprocess(row_constraints, column_constraints, ancho, largo)
     #print(domains)
 
-    new_domains, node_count = forward_checking(domains, width, height, row_clues, col_clues, 0)
-    #print( new_domains, node_count, backtrack_count)
+    new_domains, node_count = forward_checking(domains, ancho, largo, row_constraints, column_constraints, 0)
 
     if new_domains:
-        assignment = {i: new_domains[i][0] for i in range(len(new_domains))}
-        grid = [[assignment[row * width + col] for col in range(width)] for row in range(height)]
-        return grid, node_count
+        asignados = {}
+        for i in range(len(new_domains)):
+            asignados[i] = new_domains[i][0]
+        
+        cells = []
+        for row in range(largo):
+            cells.append([])
+            for col in range(ancho):
+                cells[row].append(asignados[row * ancho + col])
+            
+                
+        return cells, node_count
     else:
         print("No solution found")
         return None, node_count
 
 def main():
 
-    row_clues = [
+    row_constraints = [
         [4],
-        [5],
-        [1, 2],
-        [1, 2],
-        [1, 2],
-        [1, 2],
-        [5],
-        [4]
+        [8],
+        [10],
+        [1, 1, 2, 1, 1],
+        [1, 1, 2, 1, 1],
+        [1, 6, 1],
+        [6],
+        [2, 2],
+        [4],
+        [2]
     ]
 
-    col_clues = [
-        [2, 2],
-        [8],
-        [2, 2],
-        [2, 2],
-        [6],
+    column_constraints = [
+        [4],
+        [2],
+        [7],
+        [3, 4],
+        [7, 2],
+        [7, 2],
+        [3, 4],
+        [7],
+        [2],
         [4]
     ]
 
     start_time = time.perf_counter()
-    solution, node_count= solve_nonogram(row_clues, col_clues)
+    solution, node_count= solve_nonogram(row_constraints, column_constraints)
     end_time = time.perf_counter()
 
     if solution:
         for row in solution:
-            print("".join("1 " if cell == 1 else "0 " for cell in row))
+            print()
+            for cell in row:
+                if cell == 1:
+                    print("#", end=" ")
+                else:
+                    print(".", end=" ")
 
     elapsed_time = end_time - start_time
+    print()
+
     print(f"Tiempo de ejecución: {elapsed_time:.4f} segundos")
     print(f"Nodos generados: {node_count}")
 
