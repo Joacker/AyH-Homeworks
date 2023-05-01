@@ -60,7 +60,7 @@ def greedy_determinista(uav_data):
     # de manera ascendente
     costo_total = 0
     sorting_uavs = sorted(uav_data, key=lambda uav: uav['tiempo_aterrizaje_ideal'], reverse=False)
-    print(sorting_uavs)
+    # print(sorting_uavs)
     # ahora, iteramos sobre cada uav, y sobre cada tiempo de aterrizaje,
     # para ver si el tiempo de aterrizaje es menor al tiempo de aterrizaje ideal
     # si es menor, lo guardamos en un array de tiempos de aterrizaje
@@ -70,14 +70,15 @@ def greedy_determinista(uav_data):
         penalizacion = float('inf')
         for tiempo in uav['tiempos_aterrizaje']:
             condicion_resta = abs(tiempo - uav['tiempo_aterrizaje_ideal'])
-            if penalizacion < condicion_resta:
+            if condicion_resta < penalizacion:
+                print("condicion_resta",condicion_resta)
+                
                 assigned_time = tiempo
                 penalizacion = condicion_resta
         
         #Procedemos a comparar entre los vlaores de tiempo de aterrizaje ideal y el tiempo de aterrizaje menor
         min_time_assigned = min(assigned_time, uav['tiempo_aterrizaje_maximo'])
         assigned_time = max(uav["tiempo_aterrizaje_menor"],min_time_assigned)
-        
         uav['orden'] = i
         uav['tiempo_aterrizaje_asignado'] = assigned_time
         costo_total += abs(assigned_time - uav['tiempo_aterrizaje_ideal'])
@@ -93,7 +94,7 @@ def display_data(total_cost,uav_data):
         print("Orden de aterrizaje:", array_solutions)
 
 def plot_schedule(uav_data):
-        fig, ax = plt.subplots()
+        ax = plt.subplots()
 
         for uav in uav_data:
             y = uav['orden']
@@ -116,14 +117,35 @@ def plot_schedule(uav_data):
         plt.tight_layout()
         plt.show()
 
+
+def process_data(file_name):
+    uav_data = read_file(file_name)
+    #print(uav_data)
+    costo_total, processed_uav_data = greedy_determinista(uav_data)
+    # print(costo_total)
+    # print(processed_uav_data)
+    display_data(costo_total, processed_uav_data)
+    plot_schedule(processed_uav_data)
+
 if __name__ == '__main__':
     #palabras = [90, 90, 113, 113, 90, 90, 113, 90, 135, 113]
     #longitudes = list(map(float, palabras))
     #print(longitudes)
-    uav_data = read_file('t2_Titan')
-    #print(uav_data)
-    costo_total, processed_uav_data = greedy_determinista(uav_data)
-    print(costo_total)
-    print(processed_uav_data)
-    display_data(costo_total, processed_uav_data)
-    plot_schedule(processed_uav_data)
+    seguir = True
+    while seguir:
+        print("""Bienvenido al programa de aterrizaje de UAVs para algoritmo Greedy Determinista
+                1. t2_Deimos.txt
+                2. t2_Europa.txt
+                3. t2_Titan.txt
+                4. Salir""")
+        opcion = input("Ingrese la opcion que desea: ")
+        if opcion == "1":
+            process_data('t2_Deimos')
+        elif opcion == "2":
+            process_data('t2_Europa')
+        elif opcion == "3":
+            process_data('t2_Titan')
+        elif opcion == "4":
+            seguir = False
+        else:
+            print("Opcion no valida")
