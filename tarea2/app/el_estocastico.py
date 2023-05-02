@@ -59,7 +59,6 @@ def read_file(name_file):
 def greedy_estucastico(uav_data, seed=0):
     # Usamos de semilla el tiempo actual en epoch time para que sea aleatorio
     np.random.seed(seed)
-    
     costo_total = 0
     sorting_uavs = sorted(uav_data, key=lambda x: x['tiempo_aterrizaje_ideal'], reverse=False)
     time1 = 0
