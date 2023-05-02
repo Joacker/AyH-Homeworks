@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import random, time
 import numpy as np
 
 def read_file(name_file):
@@ -53,3 +54,63 @@ def read_file(name_file):
             uav_data.append(uav)
 
         return uav_data
+
+
+def greedy_estucastico(uav_data, seed=0):
+    # Usamos de semilla el tiempo actual en epoch time para que sea aleatorio
+    np.random.seed(seed)
+    
+    costo_total = 0
+    sorting_uavs = sorted(uav_data, key=lambda x: x['tiempo_aterrizaje_ideal'], reverse=False)
+    time1 = 0
+    
+    for i in range(len(uav_data)):
+        
+        minum_values = min(len(sorting_uavs), 3)
+        
+        probabilities = []
+        for j in range(minum_values):
+            probabilities.append(1 / (j + 1))
+        suma_probabilidades = sum(probabilities)
+        
+        new_probabilities = []
+        for p in range(len(probabilities)):
+            new_probabilities.append(probabilities[p] / suma_probabilidades)
+        
+        
+        # Seleccionar uno de los minum_value UAVs más cercanos al tiempo ideal actual
+        idx = np.random.choice(range(minum_values), p=new_probabilities)
+        # se debe remover el uav de la lista de uavs disponibles
+        selected_uav = sorting_uavs.pop(idx)
+        
+        closest_time =  max(selected_uav['tiempo_aterrizaje_menor'], min(selected_uav['tiempo_aterrizaje_maximo'], max(time1, selected_uav['tiempo_aterrizaje_ideal'])))
+        
+        penalty = abs(closest_time - selected_uav['tiempo_aterrizaje_ideal'])
+        
+        selected_uav['tiempo_aterrizaje_asignado'] = closest_time
+        selected_uav['penalizacion'] = penalty
+        
+        # Actualizar el costo total y el tiempo actual
+        costo_total += penalty
+        time1 = closest_time + selected_uav['tiempos_aterrizaje'][i]
+        
+        # Asignar el orden de aterrizaje
+        selected_uav['orden'] = i
+
+    return costo_total, uav_data
+
+def display_data(total_cost, uav_data):
+    print("Costo total:", total_cost)
+    sorted_uav_data = sorted(uav_data, key=lambda uav: uav['orden'])
+    array_solutions = []
+    for i in sorted_uav_data:
+            array_solutions.append(i['index'])
+    print("Orden de aterrizaje:", array_solutions)
+
+if __name__ == "__main__":
+    uav_data = read_file('t2_Titan')
+    costo_total, sorting_uavs = greedy_estucastico(uav_data,12)
+    print("Costo total: ", costo_total)
+    print("UAVs: ", sorting_uavs)
+    display_data(costo_total, sorting_uavs)
+    
