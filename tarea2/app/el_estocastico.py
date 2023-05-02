@@ -130,10 +130,20 @@ def plot_schedule(uav_data):
         plt.tight_layout()
         plt.show()
 
+def process_data(file_name, seed=0):
+    uav_data = read_file(file_name)
+    #print(uav_data)
+    costo_total, processed_uav_data = greedy_estucastico(uav_data, seed)
+    # print(costo_total)
+    # print(processed_uav_data)
+    display_data(costo_total, processed_uav_data)
+    plot_schedule(processed_uav_data)
+
 if __name__ == "__main__":
-    uav_data = read_file('t2_Titan')
+    uav_data = read_file('t2_Europa')
     costo_total, sorting_uavs = greedy_estucastico(uav_data,12)
     print("Costo total: ", costo_total)
     print("UAVs: ", sorting_uavs)
     display_data(costo_total, sorting_uavs)
+    plot_schedule(sorting_uavs)
     
