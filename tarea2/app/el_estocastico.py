@@ -106,6 +106,30 @@ def display_data(total_cost, uav_data):
             array_solutions.append(i['index'])
     print("Orden de aterrizaje:", array_solutions)
 
+def plot_schedule(uav_data):
+        fig, ax = plt.subplots()
+
+        for uav in uav_data:
+            y = uav['orden']
+            
+            # Dibujar puntos en el tiempo minimo, tiempo ideal, tiempo maximo y tiempo de aterrizaje asignado
+            ax.plot(uav['tiempo_aterrizaje_menor'], y, marker='o', markersize=6, color='red')
+            ax.plot(uav['tiempo_aterrizaje_ideal'], y, marker='o', markersize=6, color='green')
+            ax.plot(uav['tiempo_aterrizaje_maximo'], y, marker='o', markersize=6, color='blue')
+            ax.plot(uav['tiempo_aterrizaje_asignado'], y, marker='o', markersize=8, color='black')
+            
+            # Mostrar los valores del tiempo minimo, tiempo ideal, tiempo maximo y tiempo de aterrizaje asignado
+            ax.text(uav['tiempo_aterrizaje_menor'], y, f"{uav['tiempo_aterrizaje_menor']:.1f}", ha='right', va='bottom', color='red')
+            ax.text(uav['tiempo_aterrizaje_ideal'], y, f"{uav['tiempo_aterrizaje_ideal']:.1f}", ha='right', va='bottom', color='green')
+            ax.text(uav['tiempo_aterrizaje_maximo'], y, f"{uav['tiempo_aterrizaje_maximo']:.1f}", ha='left', va='bottom', color='blue')
+            ax.text(uav['tiempo_aterrizaje_asignado'], y, f"{uav['tiempo_aterrizaje_asignado']:.1f}", ha='left', va='bottom', color='black')
+
+        ax.set_xlabel('Tiempo')
+        ax.set_ylabel('Orden de aterrizaje')
+        ax.set_title('Programacion de aterrizaje de UAVs')
+        plt.tight_layout()
+        plt.show()
+
 if __name__ == "__main__":
     uav_data = read_file('t2_Titan')
     costo_total, sorting_uavs = greedy_estucastico(uav_data,12)

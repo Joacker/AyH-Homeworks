@@ -98,8 +98,6 @@ def plot_schedule(uav_data):
 
         for uav in uav_data:
             y = uav['orden']
-            [2, 3, 4, 5, 7, 6, 8, 9, 0, 13, 12, 1, 11, 10, 14]
-            [2, 3, 4, 5, 7, 6, 8, 9, 0, 13, 12, 1, 11, 10, 14]
             
             # Dibujar puntos en el tiempo minimo, tiempo ideal, tiempo maximo y tiempo de aterrizaje asignado
             ax.plot(uav['tiempo_aterrizaje_menor'], y, marker='o', markersize=6, color='red')
