@@ -70,8 +70,8 @@ def greedy_estucastico(uav_data, seed=0):
         probabilities = []
         for j in range(minum_values):
             probabilities.append(1 / (j + 1))
+            
         suma_probabilidades = sum(probabilities)
-        
         new_probabilities = []
         for p in range(len(probabilities)):
             new_probabilities.append(probabilities[p] / suma_probabilidades)
@@ -139,11 +139,26 @@ def process_data(file_name, seed=0):
     display_data(costo_total, processed_uav_data)
     plot_schedule(processed_uav_data)
 
-if __name__ == "__main__":
-    uav_data = read_file('t2_Europa')
-    costo_total, sorting_uavs = greedy_estucastico(uav_data,12)
-    print("Costo total: ", costo_total)
-    print("UAVs: ", sorting_uavs)
-    display_data(costo_total, sorting_uavs)
-    plot_schedule(sorting_uavs)
+if __name__ == "__main__": 
+    seguir = True
+    while seguir:
+        print("""Bienvenido al programa de aterrizaje de UAVs para algoritmo Greedy Determinista
+                1. t2_Deimos.txt
+                2. t2_Europa.txt
+                3. t2_Titan.txt
+                4. Salir""")
+        opcion = input("Ingrese la opcion que desea: ")
+        if opcion == "1":
+            seed = int(input("Ingrese la semilla: "))
+            process_data('t2_Deimos',seed)
+        elif opcion == "2":
+            seed = int(input("Ingrese la semilla: "))
+            process_data('t2_Europa',seed)
+        elif opcion == "3":
+            seed = int(input("Ingrese la semilla: "))
+            process_data('t2_Titan',seed)
+        elif opcion == "4":
+            seguir = False
+        else:
+            print("Opcion no valida")
     
