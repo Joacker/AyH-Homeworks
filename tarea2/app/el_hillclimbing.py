@@ -127,19 +127,24 @@ def greedy_estucastico(uav_data, seed=0):
 
     return costo_total, uav_data
 
-def Cost(uav_data, result):
-  cost = 0
-  for i in result:
+def Cost(uav_data, orden_aterrizaje):
+  cost = 0; time = 0
+  for i in orden_aterrizaje:
       uav = uav_data[i]
-      clossest_time = uav['tiempos_aterrizaje'][0]
-      cost_n = abs(uav['tiempo_aterrizaje_asignado']-result[i][0])
-      #print(cost_n,"Pref: ",arrival_times[i][1],"Selct: ", result[i][0])
-      cost = cost + cost_n
+      t_min = uav['tiempo_aterrizaje_menor']
+      t_max = uav['tiempo_aterrizaje_maximo']
+      t_ideal = uav['tiempo_aterrizaje_ideal']
+      closest_time = max(t_min, min(t_max, max(time, t_ideal)))
+      penalty = abs(closest_time - t_ideal)
+      cost = cost + penalty
+      time = closest_time + uav['tiempos_aterrizaje'][i]
   return cost
+
 
 
 if __name__ == "__main__":
     uav_data = read_file("t2_Titan")
     costo_total, sorting_uavs = greedy_determinista(uav_data)
     print(costo_total)
-    print(sorting_uavs)
+    print(sorting_uavs[0])
+    print("El costo es: "+str(Cost(uav_data, [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14])))
