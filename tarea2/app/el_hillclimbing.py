@@ -141,10 +141,51 @@ def Cost(uav_data, orden_aterrizaje):
   return cost
 
 
+def hillclimbing_some_improvement(init_solution, uav_data, max_iter=1000, seed=0):
+    np.random.seed(seed)
+    best_solution = init_solution.copy()
+    best_cost = Cost(uav_data, best_solution)
+    found_better = True
+    for _ in range(max_iter):
+        if found_better:
+            found_better = False
+            for _ in range(100):
+                vecino = generate_neighbors(best_solution)
+                vecino_cost = Cost(uav_data, vecino)
+                if vecino_cost < best_cost:
+                    best_cost = vecino_cost
+                    best_solution = vecino.copy()
+                    found_better = True
+                    break
+    return best_solution, best_cost
+    
+def generate_neighbors(orden_aterrizaje):
+    vecino = orden_aterrizaje.copy()
+    idx1, idx2 = np.random.choice(range(len(orden_aterrizaje)), 2, replace=False)
+    vecino[idx1] = orden_aterrizaje[idx2]
+    vecino[idx2] = orden_aterrizaje[idx1]
+    return vecino
+
+
+def display_data_greedy(total_cost, uav_data):
+    print("Costo total:", total_cost)
+    sorted_uav_data = sorted(uav_data, key=lambda uav: uav['orden'])
+    array_solutions = []
+    for i in sorted_uav_data:
+            array_solutions.append(i['index'])
+    return array_solutions
+
+def display_data_after_hillclimbing(total_cost, uav_data):
+    print("Costo total:", total_cost)
+    print(uav_data)
+    
 
 if __name__ == "__main__":
     uav_data = read_file("t2_Titan")
     costo_total, sorting_uavs = greedy_determinista(uav_data)
-    print(costo_total)
-    print(sorting_uavs[0])
-    print("El costo es: "+str(Cost(uav_data, [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14])))
+    # print(costo_total)
+    # print(sorting_uavs[0])
+    first_solutions = display_data_greedy(costo_total, sorting_uavs)
+    #print(first_solutions)
+    first_solutions1, cost1 = (hillclimbing_some_improvement(first_solutions, uav_data, max_iter=1000, seed=0))
+    display_data_after_hillclimbing(cost1, first_solutions1)
