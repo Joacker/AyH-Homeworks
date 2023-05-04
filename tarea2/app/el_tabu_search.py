@@ -186,5 +186,22 @@ def tabu_search(init_solution, uav_data, max_iter=1000,
     return best_solution, best_cost
         
 
+def display_data_greedy(total_cost, uav_data):
+    print("Costo total:", total_cost)
+    sorted_uav_data = sorted(uav_data, key=lambda uav: uav['orden'])
+    array_solutions = []
+    for i in sorted_uav_data:
+            array_solutions.append(i['index'])
+    return array_solutions, sorted_uav_data
+
+def display_data_after_hillclimbing(total_cost, uav_data):
+    print("Costo total:", total_cost)
+    print(uav_data)
+    
 if __name__ == "__main__":
-    pass
+    uav_data = read_file("t2_Titan")
+    costo_total, sorting_uavs = greedy_determinista(uav_data)
+    order_solution, sorted_uav_data = display_data_greedy(costo_total, sorting_uavs)
+    
+    first_solution, cost_first_solution = tabu_search(order_solution, sorted_uav_data, max_iter=1000, tabu_size=5)
+    display_data_after_hillclimbing(cost_first_solution, first_solution)

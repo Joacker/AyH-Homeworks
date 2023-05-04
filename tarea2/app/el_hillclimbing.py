@@ -138,7 +138,6 @@ def Cost(uav_data, orden_aterrizaje):
       cost = cost + penalty
   return cost
 
-
 def hillclimbing_some_improvement(init_solution, uav_data, max_iter=1000, seed=0):
     np.random.seed(seed)
     best_solution = init_solution.copy()
@@ -185,6 +184,7 @@ def hillclimbing_improved(init_solution, uav_data, max_iter=1000, seed=0):
                 best_cost = vecinos_cost[index]
                 best_solution = vecinos[index].copy()
                 found_better = True
+                
     return best_solution, best_cost
     
 
@@ -194,7 +194,6 @@ def generate_neighbors(orden_aterrizaje):
     vecino[idx1] = orden_aterrizaje[idx2]
     vecino[idx2] = orden_aterrizaje[idx1]
     return vecino
-
 
 def display_data_greedy(total_cost, uav_data):
     print("Costo total:", total_cost)
@@ -212,14 +211,13 @@ def display_data_after_hillclimbing_improved(total_cost, uav_data):
     print("Costo total:", total_cost)
     print(uav_data)
     
-
 if __name__ == "__main__":
     uav_data = read_file("t2_Europa")
     costo_total, sorting_uavs = greedy_determinista(uav_data)
     # print(costo_total)
     # print(sorting_uavs[0])
     order_solution, sorted_uav_data = display_data_greedy(costo_total, sorting_uavs)
-    print(sorted_uav_data[0])
+    #print(sorted_uav_data[0])
     # for uavs in sorted_uav_data:
     #     print(uavs["index"], uavs["orden"], uavs["tiempo_aterrizaje_asignado"])
     #print(first_solutions)
