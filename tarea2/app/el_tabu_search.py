@@ -52,3 +52,30 @@ def read_file(name_file):
             uav_data.append(uav)
 
         return uav_data
+
+def Cost(uav_data, orden_aterrizaje):
+  cost = 0
+  for i in orden_aterrizaje:
+      uav = uav_data[i]
+      t_ideal = uav['tiempo_aterrizaje_ideal']
+      t_asignado = uav['tiempo_aterrizaje_asignado']
+      penalty = abs(t_asignado - t_ideal)
+      cost = cost + penalty
+  return cost
+   
+
+
+
+
+def tabu_search(init_solution, uav_data, max_iter=1000, 
+                tabu_size=5, aspiration_value=None):
+    best_solution = init_solution.copy()
+    best_cost = Cost(uav_data, best_solution)
+    tabu_list = []
+    
+    current_solution = init_solution.copy()
+    current_cost = best_cost
+    
+
+if __name__ == "__main__":
+    print("Hello World")
