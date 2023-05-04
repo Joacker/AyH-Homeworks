@@ -69,7 +69,7 @@ def greedy_estucastico(uav_data, seed=0):
         
         probabilities = []
         for j in range(minum_values):
-            probabilities.append(1 / (j + 1))
+            probabilities.append(1 / (j**2 + 1))
             
         suma_probabilidades = sum(probabilities)
         new_probabilities = []
