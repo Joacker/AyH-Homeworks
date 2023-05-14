@@ -52,8 +52,6 @@ def read_file(name_file):
             uav_data.append(uav)
         return uav_data
 
-
-
 def greedy_determinista(uav_data):
     # primero, lo que hacemos es ordenar los tiempo de aterrizaje sobre cada uav, 
     # de manera ascendente
@@ -74,14 +72,20 @@ def greedy_determinista(uav_data):
         #Procedemos a comparar entre los vlaores de tiempo de aterrizaje ideal y el tiempo de aterrizaje menor
         uav_anterior = sorting_uavs[i-1]
         assigned_time = max(uav["tiempo_aterrizaje_menor"],uav_anterior["tiempo_aterrizaje_asignado"]
-                            +uav_anterior["tiempos_aterrizaje"][uav["index"]])
+                            + uav_anterior["tiempos_aterrizaje"][uav["index"]])
         if assigned_time <= uav['tiempo_aterrizaje_maximo']:
             uav['orden'] = i
             uav['tiempo_aterrizaje_asignado'] = assigned_time
             costo_total += abs(assigned_time - uav['tiempo_aterrizaje_ideal'])
-            continue
         else:
             print("No se puede asignar un tiempo de aterrizaje")
+        if i > 0 and uav['tiempo_aterrizaje_ideal'] < uav_anterior['tiempo_aterrizaje_asignado']:
+            #print("No se puede asignar un tiempo de aterrizaje")
+            uav['orden'] = i
+            uav_anterior = sorting_uavs[i-1]
+            uav['tiempo_aterrizaje_asignado'] = uav_anterior['tiempo_aterrizaje_asignado'] + uav_anterior['tiempos_aterrizaje'][uav['index']]
+            costo_total += abs(uav['tiempo_aterrizaje_asignado'] - uav['tiempo_aterrizaje_ideal'])
+            continue
     
     return costo_total, sorting_uavs
 

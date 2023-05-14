@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 
 import numpy as np, random
+from collections import deque
 
 def read_file(name_file):
     uav_data = []
@@ -54,16 +55,6 @@ def read_file(name_file):
             uav_data.append(uav)
 
         return uav_data
-
-def Cost(uav_data, orden_aterrizaje):
-  cost = 0
-  for i in orden_aterrizaje:
-      uav = uav_data[i]
-      t_ideal = uav['tiempo_aterrizaje_ideal']
-      t_asignado = uav['tiempo_aterrizaje_asignado']
-      penalty = abs(t_asignado - t_ideal)
-      cost = cost + penalty
-  return cost
    
 def generate_neighbors(orden_aterrizaje):
     vecino = orden_aterrizaje.copy()
@@ -145,44 +136,60 @@ def greedy_estucastico(uav_data, seed=0):
 
     return costo_total, uav_data
 
+def Cost(uav_data, orden_aterrizaje):
+  total_cost = 0
+  time = 0
+  for i in orden_aterrizaje:
+      uav = uav_data[i]
+      closest_time = max(uav['tiempo_aterrizaje_menor'], min(uav['tiempo_aterrizaje_maximo'], max(time, uav['tiempo_aterrizaje_ideal'])))
+      penalty = abs(closest_time - uav['tiempo_aterrizaje_ideal'])
+      total_cost += penalty
+      time = closest_time + uav['tiempos_aterrizaje'][i]
+  return total_cost
+
 def tabu_search(init_solution, uav_data, max_iter=1000, 
                 tabu_size=5, aspiration_value=None):
-    best_solution = init_solution.copy()
+    # Inicializar la solución inicial y el tabu list
+    current_solution = init_solution
+    tabu_list = deque(maxlen=tabu_size)
+    best_solution = current_solution
     best_cost = Cost(uav_data, best_solution)
-    tabu_list = []
-    
-    current_solution = init_solution.copy()
-    current_cost = best_cost
-    
-    found_better = False
-    
+    best_cost_history = []
+    best_cost_history.append(best_cost)
+    # Iterar hasta que se cumpla el criterio de parada
     for i in range(max_iter):
-        neighbors = [generate_neighbors(current_solution) for i in range(100)]
-        neighbors_cost = [Cost(uav_data, neighbor) for neighbor in neighbors]
-        best_neighbor = neighbors[np.argmin(neighbors_cost)]
+        # Generar los vecinos de la solución actual
+        neighbors = []
+        for j in range(len(current_solution)):
+            neighbor = generate_neighbors(current_solution)
+            neighbors.append(neighbor)
+        # Seleccionar el mejor vecino
+        best_neighbor = min(neighbors, key=lambda x: Cost(uav_data, x))
         best_neighbor_cost = Cost(uav_data, best_neighbor)
-        
-        if best_neighbor_cost < best_cost:
-            best_solution = best_neighbor
-            best_cost = best_neighbor_cost
-            found_better = True
+        # Si el mejor vecino no está en la lista tabu, se actualiza la solución actual
+        if best_neighbor not in tabu_list:
+            current_solution = best_neighbor
+            current_cost = best_neighbor_cost 
+            # Si el costo de la solución actual es mejor que el mejor costo, se actualiza
+            if current_cost < best_cost:
+                best_solution = current_solution
+                best_cost = current_cost
+                best_cost_history.append(best_cost)
+        # Si el mejor vecino está en la lista tabu, se actualiza la solución actual si el costo
+        # del mejor vecino es mejor que el mejor costo
         else:
-            found_better = False
-        
-        if aspiration_value is not None:
-            if best_neighbor_cost < aspiration_value:
-                best_solution = best_neighbor
-                best_cost = best_neighbor_cost
-                found_better = True
-        
-        if not found_better:
-            tabu_list.append(current_solution)
-            if len(tabu_list) > tabu_size:
-                tabu_list.pop(0)
-        
-        current_solution = best_neighbor
-        current_cost = best_neighbor_cost
-     
+            if best_neighbor_cost < best_cost:
+                current_solution = best_neighbor
+                current_cost = best_neighbor_cost
+                best_solution = current_solution
+                best_cost = current_cost
+                best_cost_history.append(best_cost)
+        # Se agrega el mejor vecino a la lista tabu
+        tabu_list.append(best_neighbor)
+        # Si se cumple el criterio de parada, se termina la búsqueda
+        if len(best_cost_history) > 10:
+            if best_cost_history[-10] == best_cost:
+                break
     return best_solution, best_cost
         
 
@@ -199,7 +206,7 @@ def display_data_after_hillclimbing(total_cost, uav_data):
     print(uav_data)
     
 if __name__ == "__main__":
-    uav_data = read_file("t2_Titan")
+    uav_data = read_file("t2_Europa")
     costo_total, sorting_uavs = greedy_determinista(uav_data)
     order_solution, sorted_uav_data = display_data_greedy(costo_total, sorting_uavs)
     

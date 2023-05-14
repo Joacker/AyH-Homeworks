@@ -129,14 +129,15 @@ def greedy_estucastico(uav_data, seed=0):
     return costo_total, uav_data
 
 def Cost(uav_data, orden_aterrizaje):
-  cost = 0
+  total_cost = 0
+  time = 0
   for i in orden_aterrizaje:
       uav = uav_data[i]
-      t_ideal = uav['tiempo_aterrizaje_ideal']
-      t_asignado = uav['tiempo_aterrizaje_asignado']
-      penalty = abs(t_asignado - t_ideal)
-      cost = cost + penalty
-  return cost
+      closest_time = max(uav['tiempo_aterrizaje_menor'], min(uav['tiempo_aterrizaje_maximo'], max(time, uav['tiempo_aterrizaje_ideal'])))
+      penalty = abs(closest_time - uav['tiempo_aterrizaje_ideal'])
+      total_cost += penalty
+      time = closest_time + uav['tiempos_aterrizaje'][i]
+  return total_cost
 
 def hillclimbing_some_improvement(init_solution, uav_data, max_iter=1000, seed=0):
     np.random.seed(seed)
